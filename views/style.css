@@ -1,0 +1,144 @@
+body {
+    background: white;
+    color: #9100ff;
+}
+
+#webAppHeader {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    background-color: #9100ff;
+    width: 100%;
+    color: white;
+    z-index: 2;
+}
+
+#webAppHeader div {
+    display: inline-block;
+}
+
+.appTitle {
+    position: absolute;
+    left: 0px;
+    padding: 20px;
+    font-size: 40px;
+    margin: auto;
+}
+
+.appSubTitle {
+    position: absolute;
+    right: 0px;
+    padding: 20px;
+    margin: auto;
+}
+
+.homeIcon img {
+    width: 100px;
+    padding: 20px;
+    color: white;
+    margin: auto;
+}
+
+#webAppFooter {
+    position: fixed;
+    bottom: 0px;
+    left: 0px;
+    background-color: #9100ff;
+    width: 100%;
+    color: white;
+    z-index: 2;
+}
+
+h1 {
+    text-align: center;
+}
+
+#webAppBody {
+    margin: 125px auto;
+    width: 100%;
+}
+
+input {
+    width: 400px;
+    margin: 5px auto;
+    display: block;
+}
+
+input[type=checkbox] {
+    width: 30px;
+    display: inline-block;
+}
+
+button {
+    margin: 10px;
+    color: white;
+    background: #9100ff;
+}
+
+button:disabled {
+    margin: 10px;
+    color: white;
+    background: gray;
+}
+
+.boxUnit {
+    margin: 50px auto;
+    padding: 50px;
+    background: #ece5e5;
+    width: 500px;
+    border-radius: 40px;
+}
+
+.boxUnit.row {
+    margin: 50px auto;
+    padding: 50px;
+    background: #ece5e5;
+    width: 1000px;
+    border-radius: 40px;
+}
+
+hr {
+    border: 2px solid #9100ff;
+    text-align: center;
+}
+
+hr::after {
+    content: " § § § ";
+    background: white;
+    display: inline-block;
+	position: relative;
+	top: -30px;
+	padding: 0 10px;
+	font-size: 40px;
+}
+
+.popPolls li {
+    text-align: left;
+/*     list-style: none; */
+/*     margin: 5px auto; */
+}
+
+.popPolls {
+/*     list-style-type: none; */
+    padding: 0px;
+}
+
+.icon {
+    width: 100px;
+}
+
+.delOption {
+    display: inline-block;
+}
+
+#myOptions input {
+    display: inline-block;
+}
+
+#createPoll, #addPoll {
+    font-size: 30px;
+    border-radius: 40px;
+    width: 300px;
+    height: 75px;
+    margin-bottom: 40px;
+}

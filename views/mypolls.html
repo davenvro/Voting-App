@@ -1,0 +1,85 @@
+<html>
+
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+        crossorigin="anonymous" />
+    <link rel="stylesheet" href="style.css ">
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery.validation/1.15.1/jquery.validate.min.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#webAppHeader").load("header.html");
+            $("#webAppFooter").load("footer.html");
+
+            var optionCtr = 2;
+            $("#addOption").click(function () {
+                optionCtr++;
+                $("#myOptions").append("<div class='optionItem' id='delDiv" + optionCtr + "'><input type='text' id='option" + optionCtr + "' placeholder='Option #" + optionCtr + "' /><button class='delOption' id='del" + optionCtr + "' tabindex='-1'>Delete</button></div>");
+                $("#option" + optionCtr).focus();
+                return false;
+            });
+
+            $(document).on("click", ".delOption", function () {
+                var optionIndex = $(this).attr("id").substr(3);
+                $("#option" + optionIndex).remove();
+                $(this).remove();
+                $("#delDiv" + optionIndex).remove();
+                return false;
+            });
+
+            function getPollOptions() {
+                var arrOptions = [];
+                for (var x = 1; x <= optionCtr; x++) {
+                    arrOptions.push($("#option" + x).val());
+                }
+                return JSON.stringify(arrOptions);
+            }
+
+            $("#formCreatePoll").submit(function () {
+                $.post("/createPoll?userID=" + localStorage.getItem("voteInUserID") + "&pollName=" + $("#pollName").val() + "&pollOptions=" + getPollOptions(), function (data) {
+                    if (data.substr(0, 10) == "success-->") {
+                        $("#webAppBody").html("<p>Your poll can be accessed at:</p>" +
+                            "<p class='pollLink'><a href='http://192.168.15.8:8081/votein=" + data.substr(10, 1000)+ "'>http://192.168.15.8:8081/votein=" + data.substr(10, 1000) + "</a><p>");
+                        return false;
+                    } else {
+                        alert("Error creating poll... Please try again...");
+                        return false;
+                    }
+                });
+                return false;
+            });
+        });
+    </script>
+</head>
+
+<body class="container-fluid">
+    <div class="container text-center">
+        <div id="webAppHeader"></div>
+        <div id="webAppBody">
+            <form method="post" id="formCreatePoll">
+                <button id="createPoll">Create Poll</button>
+                <input required type="text" id="pollName" placeholder="Poll Name" autofocus/>
+                <br/>
+                <br/>
+                <h2>Options</h2>
+                <div id="myOptions">
+                    <div class="optionItem">
+                        <input required type="text" id="option1" placeholder="Option #1" />
+                        <button class="delOption" id="del1" style="visibility:hidden">Delete</button>
+                    </div>
+                    <div class="optionItem">
+                        <input required type="text" id="option2" placeholder="Option #2" />
+                        <button class="delOption" id="del2" style="visibility:hidden">Delete</button>
+                    </div>
+                </div>
+
+                <button id="addOption">More Options</button>
+            </form>
+        </div>
+        <div id="webAppFooter"></div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,65 @@
+<html>
+
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+        crossorigin="anonymous" />
+    <link rel="stylesheet" href="style.css ">
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery.validation/1.15.1/jquery.validate.min.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#webAppHeader").load("header.html");
+            $("#webAppFooter").load("footer.html");
+
+            $("#addPoll").click(function () {
+                window.location = "/mypolls";
+            });
+        });
+    </script>
+</head>
+
+<body class="container-fluid">
+    <div class="container text-center">
+        <div id="webAppHeader"></div>
+        <div id="webAppBody">
+            <div class="row">
+                <div class="boxUnit col-xs-6">
+                    <button type="submit" id="addPoll">Add Poll</button>
+                    <h1>Personal Polls</h1>
+                    <ul class="popPolls" id="personalPolls">
+                    </ul>
+                    <script>
+                        $.get("/personalpolls?userID=" + localStorage.getItem("voteInUserID"), function (data) {
+                            console.log(data);
+                            $("#personalPolls").html(data);
+                        });
+                    </script>
+                </div>
+
+                <div class="col-xs-6">
+                    <div class="boxUnit">
+                        <h1 id="userName">Welcome __username__</h1>
+                        <a href="settings.html">
+                            <img class="icon" src="images/gear.png" alt="settings" />
+                        </a>
+                        <br />
+                    </div>
+                    <hr />
+                    <div class="boxUnit">
+                        <h1>Popular Polls</h1>
+                        <ul class="popPolls" id="popularPolls">
+                        </ul>
+                        <script>
+                            $.get("/popularpolls", function (data) {
+                                $("#popularPolls").html(data);
+                            });
+                        </script>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="webAppFooter"></div>
+</body>
+
+</html>

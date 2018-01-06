@@ -1,0 +1,129 @@
+<html>
+
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+        crossorigin="anonymous" />
+    <link rel="stylesheet" href="/style.css ">
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery.validation/1.15.1/jquery.validate.min.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#webAppHeader").load("header.html");
+            $("#webAppFooter").load("footer.html");
+
+            $("#signUpForm").submit(function () {
+                if ($("#passWord").val() != $("#passConfirm").val()) {
+                    alert("Unmatching password!!!");
+                    $("#passWord").focus();
+                    return false;
+                } else if (!$("#agreeSignUp").attr("checked")) {
+                    alert("Please agree to our terms and conditions to be able to sign-up.");
+                    $("#agreeSignUp").focus();
+                    return false;
+                }
+
+                $.post("/checkemail?fullname=" + $("#fullName").val() + "&email=" + $("#eMail").val() + "&password=" + $("#passWord").val(), function (data) {
+                    if (data.match(/\{ usedEmail: [a-f0-9]+ \}/)) {
+                        localStorage.setItem("voteInUserID", data.substr(13, data.length - 15));
+                        localStorage.setItem("voteInUserEmail", $("#eMail").val());
+                        window.location = "/userhome?userID=" + data.substr(13, data.length - 15);
+                        return false;
+                    } else if (data.match(/usedEmail/)) {
+                        alert("Email already used!!!");
+                        return false;
+                    } else {
+                        alert("Error accessing database... Please try again...");
+                        return false;
+                    }
+                });
+                return false;
+            });
+
+            $("#signInForm").submit(function () {
+                $.post("/checkemail?email=" + $("#userMail").val() + "&password=" + $("#userPassWord").val(), function (data) {
+                    if (data == "{ usedEmail: 0 }") {
+                        alert("Email not found in database!!!");
+                    } else if (data == "{ usedEmail: invalid password }") {
+                        alert("Incorrect password!!!");
+                        $("#userPassWord").focus();
+                        return false;
+                    } else if (data.match(/usedEmail/)) {
+                        localStorage.setItem("voteInUserID", data.substr(13, data.length - 15));
+                        localStorage.setItem("voteInUserEmail", $("#userMail").val());
+                        window.location = "/userhome?userID=" + data.substr(13, data.length - 15);
+                        return false;
+                    } else {
+                        alert("Error accessing database... Please try again...");
+                        return false;
+                    }
+                });
+                return false;
+            });
+
+            $("input").focus(function () {
+                $(this).select();
+            });
+        });
+    </script>
+</head>
+
+<body class="container-fluid">
+    <div class="container text-center">
+        <div id="webAppHeader"></div>
+        <div id="webAppBody">
+            <div class="boxUnit row">
+                <div class="col-xs-6">
+                    <h1>Sign In</h1>
+                    <form method="post" id="signInForm">
+                        <input required type="text" id="userMail" placeholder="E-mail" autofocus />
+                        <input required type="password" id="userPassWord" placeholder="Password" />
+                        <button id="signIn">Sign In</button>
+                    </form>
+                </div>
+
+                <div class="col-xs-6">
+                    <h1>Sign Up</h1>
+                    <form method="post" id="signUpForm">
+                        <input required type="text" id="fullName" placeholder="Name" />
+                        <input required type="text" id="eMail" placeholder="E-mail" />
+                        <input required type="password" id="passWord" placeholder="Password" />
+                        <input required type="password" id="passConfirm" placeholder="Confirm Password" />
+                        <label><input type="checkbox" id="agreeSignUp" checked /> Agree to terms and conditions</label>
+                        <button id="signUp">Sign Up</button>
+                    </form>
+                </div>
+            </div>
+
+            <hr />
+
+            <div class="boxUnit">
+                <h1>Popular Polls</h1>
+                <ul class="popPolls">
+                    <li>temporary poll</li>
+                    <li>temporary poll</li>
+                    <li>temporary poll</li>
+                    <li>temporary poll</li>
+                    <li>temporary poll</li>
+                    <li>temporary poll</li>
+                    <li>temporary poll</li>
+                    <li>temporary poll</li>
+                    <li>temporary poll</li>
+                    <li>temporary poll</li>
+                    <li>temporary poll</li>
+                    <li>temporary poll</li>
+                    <li>temporary poll</li>
+                    <li>temporary poll</li>
+                </ul>
+
+                <form>
+                    <input type="text" id="searchText" placeholder="Search Poll" />
+                    <button type="submit" id="searchPoll">Search</button>
+                </form>
+            </div>
+        </div>
+        <div id="webAppFooter"></div>
+    </div>
+</body>
+
+</html>

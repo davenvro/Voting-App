@@ -1,0 +1,20 @@
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/jquery.validation/1.15.1/jquery.validate.min.js"></script>
+
+<div class="appTitle text-left">
+    <p>Let's Vote In</p>
+</div>
+<div class="homeIcon text-center">
+    <a id="userhome"><img src="images/bullet-list.png" /></a>
+    <script>
+        var userID = localStorage.getItem("voteInUserID");
+        if (userID) {
+            $("#userhome").attr("href", "/userhome?userID=" + localStorage.getItem("voteInUserID"));
+        } else {
+            $("#userhome").attr("href", "/");
+        }
+    </script>
+</div>
+<div class="appSubTitle text-right">
+    <p>A polling app for the millenials</p>
+</div>

@@ -1,0 +1,213 @@
+<html>
+
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+        crossorigin="anonymous" />
+    <link rel="stylesheet" href="style.css ">
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery.validation/1.15.1/jquery.validate.min.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#webAppHeader").load("header.html");
+            $("#webAppFooter").load("footer.html");
+        });
+    </script>
+</head>
+
+<body class="container-fluid">
+    <div class="container text-center">
+        <div id="webAppHeader"></div>
+        <div id="webAppBody">
+            <h1>__PollName__</h1>
+            <div class="boxUnit row">
+                <div class="col-xs-6 text-left">
+                    __PollItems__
+                </div>
+                <div class="col-xs-6">
+                    <div class="graphInfo" id="pieGraph">
+                    </div>
+                    <button id="addVote" disabled>Add Poll Item</button>
+                    <style>
+                        svg {
+                            position: relative;
+                            left: -300px;
+                            width: 960px;
+                            height: 450px;
+                        }
+
+                        path.slice {
+                            stroke-width: 2px;
+                        }
+
+                        polyline {
+                            opacity: .3;
+                            stroke: black;
+                            stroke-width: 2px;
+                            fill: none;
+                        }
+                    </style>
+
+                    <script src="http://d3js.org/d3.v3.min.js"></script>
+                    <script>
+                        var svg = d3.select("#pieGraph")
+                            .append("svg")
+                            .append("g")
+
+                        svg.append("g")
+                            .attr("class", "slices");
+                        svg.append("g")
+                            .attr("class", "labels");
+                        svg.append("g")
+                            .attr("class", "lines");
+
+                        var width = 960,
+                            height = 450,
+                            radius = Math.min(width, height) / 2;
+
+                        var pie = d3.layout.pie()
+                            .sort(null)
+                            .value(function (d) {
+                                return d.value;
+                            });
+
+                        var arc = d3.svg.arc()
+                            .outerRadius(radius * 0.8)
+                            .innerRadius(radius * 0.4);
+
+                        var outerArc = d3.svg.arc()
+                            .innerRadius(radius * 0.9)
+                            .outerRadius(radius * 0.9);
+
+                        svg.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+                        var key = function (d) { return d.data.label; };
+                        var myData = __PollData__;
+
+                        var color = d3.scale.ordinal()
+                            .domain(__PollArray__)
+                            .range(__PollColor__);
+
+                        /* ------- PIE SLICES -------*/
+                        var slice = svg.select(".slices").selectAll("path.slice")
+                            .data(pie(myData), key);
+
+                        slice.enter()
+                            .insert("path")
+                            .style("fill", function (d) { return color(d.data.label); })
+                            .attr("class", "slice");
+
+                        slice
+                            .transition().duration(1000)
+                            .attrTween("d", function (d) {
+                                this._current = this._current || d;
+                                var interpolate = d3.interpolate(this._current, d);
+                                this._current = interpolate(0);
+                                return function (t) {
+                                    return arc(interpolate(t));
+                                };
+                            })
+
+                        slice.exit()
+                            .remove();
+
+                        /* ------- TEXT LABELS -------*/
+                        var text = svg.select(".labels").selectAll("text")
+                            .data(pie(myData), key);
+
+                        text.enter()
+                            .append("text")
+                            .attr("dy", ".35em")
+                            .text(function (d) {
+                                return d.data.label;
+                            });
+
+                        function midAngle(d) {
+                            return d.startAngle + (d.endAngle - d.startAngle) / 2;
+                        }
+
+                        text.transition().duration(1000)
+                            .attrTween("transform", function (d) {
+                                this._current = this._current || d;
+                                var interpolate = d3.interpolate(this._current, d);
+                                this._current = interpolate(0);
+                                return function (t) {
+                                    var d2 = interpolate(t);
+                                    var pos = outerArc.centroid(d2);
+                                    pos[0] = radius * (midAngle(d2) < Math.PI ? 1 : -1);
+                                    return "translate(" + pos + ")";
+                                };
+                            })
+                            .styleTween("text-anchor", function (d) {
+                                this._current = this._current || d;
+                                var interpolate = d3.interpolate(this._current, d);
+                                this._current = interpolate(0);
+                                return function (t) {
+                                    var d2 = interpolate(t);
+                                    return midAngle(d2) < Math.PI ? "start" : "end";
+                                };
+                            });
+
+                        text.exit()
+                            .remove();
+
+                        /* ------- SLICE TO TEXT POLYLINES -------*/
+                        var polyline = svg.select(".lines").selectAll("polyline")
+                            .data(pie(myData), key);
+
+                        polyline.enter()
+                            .append("polyline");
+
+                        polyline.transition().duration(1000)
+                            .attrTween("points", function (d) {
+                                this._current = this._current || d;
+                                var interpolate = d3.interpolate(this._current, d);
+                                this._current = interpolate(0);
+                                return function (t) {
+                                    var d2 = interpolate(t);
+                                    var pos = outerArc.centroid(d2);
+                                    pos[0] = radius * 0.95 * (midAngle(d2) < Math.PI ? 1 : -1);
+                                    return [arc.centroid(d2), outerArc.centroid(d2), pos];
+                                };
+                            });
+
+                        polyline.exit()
+                            .remove();
+                    </script>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            var userID = localStorage.getItem("voteInUserID");
+            $("#addVote").prop("disabled", userID ? false : true);
+
+            $("button").click(function () {
+                // alert($(this).attr("id"));
+                if ($(this).attr("id") == "addVote") {
+                    var newPollItem = prompt("Please enter new poll item", "");
+                    $.post("/addpollitem?pollid=" + window.location.href.replace(/^.*=/, "") + "&newpollitem=" + newPollItem, function (data) {
+                        if (data == "New poll item added.") {
+                            location.reload();
+                        } else {
+                            alert(data);
+                        }
+                    });
+                } else {
+                    $.post("/pollvote?pollid=" + $(this).attr("id"), function (data) {
+                        if (data == "Saved response to poll.") {
+                            location.reload();
+                        } else {
+                            alert(data);
+                        }
+                    });
+                }
+            })
+        </script>
+
+        <div id="webAppFooter"></div>
+    </div>
+</body>
+
+</html>
